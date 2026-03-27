@@ -41,33 +41,40 @@
     </div>
   </header>
 
-  <!-- ─────────── SEARCH + VIEW ─────────── -->
-  <div class="control-bar">
-    <div class="search-wrap">
-      <i class="ph ph-magnifying-glass"></i>
-      <input type="text" id="searchInput" placeholder="Keçid və ya qeydlərdə axtar...">
-    </div>
-    <div class="view-btns">
-      <button class="view-btn active" id="gridViewBtn" title="Grid"><i class="ph ph-squares-four"></i></button>
-      <button class="view-btn" id="listViewBtn" title="List"><i class="ph ph-list"></i></button>
+  <!-- ─────────── PAGE LAYOUT ─────────── -->
+  <div class="layout-wrapper">
+    
+    <!-- ─────────── SIDEBAR / TABS ─────────── -->
+    <aside class="sidebar">
+      <div class="tab-bar" id="tabBar">
+        <button class="tab active" data-cat="all">Hamısı <span class="tab-count" id="cnt-all">0</span></button>
+        <button class="tab" data-cat="github">GitHub <span class="tab-count" id="cnt-github">0</span></button>
+        <button class="tab" data-cat="video">Video <span class="tab-count" id="cnt-video">0</span></button>
+        <button class="tab" data-cat="ai">AI <span class="tab-count" id="cnt-ai">0</span></button>
+        <button class="tab" data-cat="kod">Kod <span class="tab-count" id="cnt-kod">0</span></button>
+        <button class="tab" data-cat="not">Mətn (Qeyd) <span class="tab-count" id="cnt-not">0</span></button>
+        <button class="tab" data-cat="link">Link <span class="tab-count" id="cnt-link">0</span></button>
+      </div>
+    </aside>
+
+    <!-- ─────────── MAIN AREA ─────────── -->
+    <div class="main-area">
+      <div class="control-bar">
+        <div class="search-wrap">
+          <i class="ph ph-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Keçid və ya qeydlərdə axtar...">
+        </div>
+        <div class="view-btns">
+          <button class="view-btn active" id="gridViewBtn" title="Grid"><i class="ph ph-squares-four"></i></button>
+          <button class="view-btn" id="listViewBtn" title="List"><i class="ph ph-list"></i></button>
+        </div>
+      </div>
+
+      <main class="main">
+        <div class="vault-grid" id="vaultGrid"></div>
+      </main>
     </div>
   </div>
-
-  <!-- ─────────── CATEGORY TABS ─────────── -->
-  <div class="tab-bar" id="tabBar">
-    <button class="tab active" data-cat="all">Hamısı <span class="tab-count" id="cnt-all">0</span></button>
-    <button class="tab" data-cat="github">GitHub <span class="tab-count" id="cnt-github">0</span></button>
-    <button class="tab" data-cat="video">Video <span class="tab-count" id="cnt-video">0</span></button>
-    <button class="tab" data-cat="ai">AI <span class="tab-count" id="cnt-ai">0</span></button>
-    <button class="tab" data-cat="kod">Kod <span class="tab-count" id="cnt-kod">0</span></button>
-    <button class="tab" data-cat="not">Mətn (Qeyd) <span class="tab-count" id="cnt-not">0</span></button>
-    <button class="tab" data-cat="link">Link <span class="tab-count" id="cnt-link">0</span></button>
-  </div>
-
-  <!-- ─────────── MAIN GRID ─────────── -->
-  <main class="main">
-    <div class="vault-grid" id="vaultGrid"></div>
-  </main>
 
   <!-- ════════════════════════════════
        ADD / EDIT MODAL
