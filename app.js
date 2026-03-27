@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const copyVal = note.url || note.content || note.title || '';
 
       const card = document.createElement('article');
-      card.className = 'vault-card';
+      card.className = `vault-card size-${note.card_size || 'normal'}`;
       card.dataset.id = note.id;
       card.innerHTML = `
         <div class="card-body">
@@ -361,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const addModal = document.getElementById('addModal');
   const fTitle = document.getElementById('fTitle');
   const fType = document.getElementById('fType');
+  const fSize = document.getElementById('fSize');
   const fUrl = document.getElementById('fUrl');
   const fUrlLabel = document.getElementById('fUrlLabel');
   const fContent = document.getElementById('fContent');
@@ -382,12 +383,16 @@ document.addEventListener('DOMContentLoaded', () => {
       titleEl.innerHTML = '<i class="ph ph-pencil-simple"></i> Qeydi Redaktə Et';
       fTitle.value = note.title || '';
       fType.value = note.item_type || 'note';
+      fSize.value = note.card_size || 'normal';
       fUrl.value = note.url || '';
       fContent.value = note.content || '';
     } else {
       titleEl.innerHTML = '<i class="ph ph-lightning"></i> Yeni Qeyd';
-      fTitle.value = ''; fType.value = 'note';
-      fUrl.value = ''; fContent.value = '';
+      fTitle.value = ''; 
+      fType.value = 'note';
+      fSize.value = 'normal';
+      fUrl.value = ''; 
+      fContent.value = '';
     }
     updateUrlField();
     addModal.classList.add('active');
@@ -408,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = fTitle.value.trim();
     const content = fContent.value.trim();
     const type = fType.value;
+    const cSize = fSize.value;
     const url = (fUrl.value || '').trim();
 
     if (!title) {
@@ -418,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<i class="ph ph-spinner"></i> Saxlanılır...';
 
-    const body = { title, content, url, item_type: type };
+    const body = { title, content, url, item_type: type, card_size: cSize };
     try {
       const res = await fetch(
         editingId ? `/api/vaults/${editingId}` : '/api/vaults',
