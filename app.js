@@ -53,21 +53,21 @@ document.addEventListener('DOMContentLoaded', () => {
   ──────────────────────────────────────── */
   const DELETE_PASSWORD = '2@@7A';
 
-  let allNotes    = [];
-  let starred     = JSON.parse(localStorage.getItem('kv-starred') || '{}');
-  let editingId   = null;
-  let pendingDel  = null;
-  let activeTab   = 'all';
-  let searchTerm  = '';
-  let isListView  = false;
+  let allNotes = [];
+  let starred = JSON.parse(localStorage.getItem('kv-starred') || '{}');
+  let editingId = null;
+  let pendingDel = null;
+  let activeTab = 'all';
+  let searchTerm = '';
+  let isListView = false;
 
   /* ──────────────────────────────────────────
      HELPER UTILS
   ──────────────────────────────────────── */
   function esc(str) {
     if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-              .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   /**
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
    * Get domain from URL
    */
   function domain(url) {
-    try { return new URL(url).hostname.replace('www.','').toUpperCase(); }
+    try { return new URL(url).hostname.replace('www.', '').toUpperCase(); }
     catch { return url; }
   }
 
@@ -99,10 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const c = (note.content || '').toLowerCase();
     if (u.includes('github.com') || u.includes('gitlab.com')) return 'github';
     if (u.includes('youtube.com') || u.includes('youtu.be') ||
-        u.includes('vimeo.com') || t.includes('video')) return 'video';
+      u.includes('vimeo.com') || t.includes('video')) return 'video';
     if (u.includes('openai') || u.includes('anthropic') || u.includes('claude') ||
-        u.includes('gemini') || u.includes('huggingface') ||
-        t.includes(' ai ') || c.includes('chatgpt') || c.includes('llm')) return 'ai';
+      u.includes('gemini') || u.includes('huggingface') ||
+      t.includes(' ai ') || c.includes('chatgpt') || c.includes('llm')) return 'ai';
     if (note.item_type === 'link') return 'link';
     return 'not';
   }
@@ -113,11 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function badge(cat) {
     const map = {
       github: ['<i class="ph ph-hash"></i> GITHUB', 'badge-github'],
-      video:  ['<i class="ph ph-hash"></i> VIDEO',  'badge-video'],
-      ai:     ['<i class="ph ph-hash"></i> AI',     'badge-ai'],
-      kod:    ['<i class="ph ph-hash"></i> KOD',    'badge-kod'],
-      not:    ['<i class="ph ph-hash"></i> QEYD',   'badge-not'],
-      link:   ['<i class="ph ph-hash"></i> LİNK',   'badge-link'],
+      video: ['<i class="ph ph-hash"></i> VIDEO', 'badge-video'],
+      ai: ['<i class="ph ph-hash"></i> AI', 'badge-ai'],
+      kod: ['<i class="ph ph-hash"></i> KOD', 'badge-kod'],
+      not: ['<i class="ph ph-hash"></i> QEYD', 'badge-not'],
+      link: ['<i class="ph ph-hash"></i> LİNK', 'badge-link'],
     };
     const [label, cls] = map[cat] || map.not;
     return `<span class="badge ${cls}">${label}</span>`;
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ──────────────────────────────────────────
      TAB COUNTS UPDATE
   ──────────────────────────────────────── */
-  const cats = ['all','github','video','ai','kod','not','link'];
+  const cats = ['all', 'github', 'video', 'ai', 'kod', 'not', 'link'];
 
   function updateCounts(notes) {
     const counts = {};
@@ -172,9 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     notes.forEach(note => {
-      const cat      = detectCat(note);
-      const ytVid    = ytId(note.url);
-      const isStarred= !!starred[note.id];
+      const cat = detectCat(note);
+      const ytVid = ytId(note.url);
+      const isStarred = !!starred[note.id];
 
       /* thumbnail/video */
       let mediaHtml = '';
@@ -187,9 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (cat !== 'not' && cat !== 'kod') {
           const iconMap = {
             github: '<i class="ph ph-github-logo"></i>',
-            video:  '<i class="ph ph-youtube-logo"></i>',
-            ai:     '<i class="ph ph-robot"></i>',
-            link:   '<i class="ph ph-link"></i>'
+            video: '<i class="ph ph-youtube-logo"></i>',
+            ai: '<i class="ph ph-robot"></i>',
+            link: '<i class="ph ph-link"></i>'
           };
           mediaHtml = `
             <div class="card-thumb platform-logo logo-${cat}">
@@ -359,17 +359,17 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ──────────────────────────────────────────
      ADD / EDIT MODAL
   ──────────────────────────────────────── */
-  const addModal  = document.getElementById('addModal');
-  const fTitle    = document.getElementById('fTitle');
-  const fType     = document.getElementById('fType');
-  const fUrl      = document.getElementById('fUrl');
+  const addModal = document.getElementById('addModal');
+  const fTitle = document.getElementById('fTitle');
+  const fType = document.getElementById('fType');
+  const fUrl = document.getElementById('fUrl');
   const fUrlLabel = document.getElementById('fUrlLabel');
-  const fContent  = document.getElementById('fContent');
-  const saveBtn   = document.getElementById('saveBtn');
+  const fContent = document.getElementById('fContent');
+  const saveBtn = document.getElementById('saveBtn');
 
   function updateUrlField() {
     const show = fType.value === 'link';
-    fUrl.style.display      = show ? '' : 'none';
+    fUrl.style.display = show ? '' : 'none';
     fUrlLabel.style.display = show ? '' : 'none';
     if (!show) fUrl.value = '';
   }
@@ -381,10 +381,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleEl = document.getElementById('addModalTitle');
     if (note) {
       titleEl.innerHTML = '<i class="ph ph-pencil-simple"></i> Qeydi Redaktə Et';
-      fTitle.value   = note.title   || '';
-      fType.value    = note.item_type || 'note';
-      fUrl.value     = note.url      || '';
-      fContent.value = note.content  || '';
+      fTitle.value = note.title || '';
+      fType.value = note.item_type || 'note';
+      fUrl.value = note.url || '';
+      fContent.value = note.content || '';
     } else {
       titleEl.innerHTML = '<i class="ph ph-lightning"></i> Yeni Qeyd';
       fTitle.value = ''; fType.value = 'note';
@@ -406,10 +406,10 @@ document.addEventListener('DOMContentLoaded', () => {
   addModal.addEventListener('click', e => { if (e.target === addModal) closeAddModal(); });
 
   saveBtn.addEventListener('click', async () => {
-    const title   = fTitle.value.trim();
+    const title = fTitle.value.trim();
     const content = fContent.value.trim();
-    const type    = fType.value;
-    const url     = (fUrl.value || '').trim();
+    const type = fType.value;
+    const url = (fUrl.value || '').trim();
 
     if (!title) {
       toast('Başlıq daxil edilməlidir.', 'error');
@@ -449,12 +449,12 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ──────────────────────────────────────────
      DELETE MODAL (Password: 2@@7A)
   ──────────────────────────────────────── */
-  const delModal  = document.getElementById('deleteModal');
-  const fPw       = document.getElementById('fPw');
-  const pwErr     = document.getElementById('pwErr');
-  const pwEye     = document.getElementById('pwEye');
+  const delModal = document.getElementById('deleteModal');
+  const fPw = document.getElementById('fPw');
+  const pwErr = document.getElementById('pwErr');
+  const pwEye = document.getElementById('pwEye');
   const pwEyeIcon = document.getElementById('pwEyeIcon');
-  const confirmBtn= document.getElementById('confirmDelBtn');
+  const confirmBtn = document.getElementById('confirmDelBtn');
 
   pwEye.addEventListener('click', () => {
     const isText = fPw.type === 'text';
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openDelModal(id) {
     pendingDel = id;
-    fPw.value  = ''; fPw.type = 'password';
+    fPw.value = ''; fPw.type = 'password';
     pwEyeIcon.className = 'ph ph-eye';
     pwErr.classList.remove('show');
     delModal.classList.add('active');
@@ -537,5 +537,8 @@ document.addEventListener('DOMContentLoaded', () => {
      INIT
   ──────────────────────────────────────── */
   updateUrlField();
-  loadNotes();
+  loadNotes().finally(() => {
+    const loader = document.getElementById('siteLoader');
+    if (loader) loader.classList.add('hidden');
+  });
 });
