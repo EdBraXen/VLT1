@@ -1,10 +1,10 @@
-const express  = require('express');
-const cors     = require('cors');
-const path     = require('path');
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const app  = express();
+const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
@@ -25,18 +25,19 @@ pool.query(`
         content    TEXT,
         url        TEXT,
         item_type  TEXT DEFAULT 'note',
+        card_size  TEXT DEFAULT 'normal',
         created_at TIMESTAMPTZ DEFAULT NOW()
     )
 `).catch(err => console.error('DB init error:', err.message));
 
 /* ── API: Create ─────────────────────────────── */
 app.post('/api/vaults', async (req, res) => {
-    const { title, url, content, item_type } = req.body;
+    const { title, url, content, item_type, card_size } = req.body;
     try {
         const r = await pool.query(
-            `INSERT INTO vaults (title, url, content, item_type)
-             VALUES ($1, $2, $3, $4) RETURNING *`,
-            [title, url, content, item_type || 'note']
+            `INSERT INTO vaults (title, url, content, item_type, card_size)
+             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+            [title, url, content, item_type || 'note', card_size || 'normal']
         );
         res.json({ id: r.rows[0].id, success: true });
     } catch (err) {
@@ -59,12 +60,12 @@ app.get('/api/vaults', async (req, res) => {
 /* ── API: Update ─────────────────────────────── */
 app.put('/api/vaults/:id', async (req, res) => {
     const { id } = req.params;
-    const { title, url, content, item_type } = req.body;
+    const { title, url, content, item_type, card_size } = req.body;
     try {
         await pool.query(
-            `UPDATE vaults SET title=$1, url=$2, content=$3, item_type=$4
-             WHERE id=$5`,
-            [title, url, content, item_type || 'note', id]
+            `UPDATE vaults SET title=$1, url=$2, content=$3, item_type=$4, card_size=$5
+             WHERE id=$6`,
+            [title, url, content, item_type || 'note', card_size || 'normal', id]
         );
         res.json({ success: true });
     } catch (err) {
