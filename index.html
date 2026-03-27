@@ -111,12 +111,12 @@
   <div class="modal-overlay" id="deleteModal">
     <div class="modal">
       <div class="modal-header">
-        <h3 class="del-title"><i class="ph ph-shield-warning"></i> Silmə Təsdiqləmə</h3>
+        <h3 class="del-title" id="authTitle"><i class="ph ph-shield-warning"></i> Silmə Təsdiqləmə</h3>
         <button class="close-btn" id="closeDelModal"><i class="ph ph-x"></i></button>
       </div>
       <div class="modal-body">
-        <div class="del-icon-wrap"><i class="ph ph-trash"></i></div>
-        <p class="del-desc">
+        <div class="del-icon-wrap" id="authIconWrap"><i class="ph ph-trash" id="authIcon"></i></div>
+        <p class="del-desc" id="authDesc">
           Bu qeydi <strong>həmişəlik</strong> silmək istəyirsiniz?<br>
           Davam etmək üçün şifrəni daxil edin.
         </p>
@@ -133,7 +133,7 @@
         <div class="modal-actions">
           <button class="btn-ghost" id="cancelDelModal">Ləğv et</button>
           <button class="btn-danger" id="confirmDelBtn">
-            <i class="ph ph-trash"></i> Sil
+            <i class="ph ph-trash" id="authBtnIcon"></i> <span id="authBtnText">Sil</span>
           </button>
         </div>
       </div>
