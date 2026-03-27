@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Vault</title>
+  <meta name="description" content="Personal knowledge vault — notes, links, code.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ─────────── TOP BAR ─────────── -->
+  <header class="topbar">
+    <a class="logo" href="#">
+      <div class="logo-mark">KV</div>
+      <span class="logo-name">Knowledge Vault</span>
+    </a>
+
+    <div class="status-pills">
+      <div class="status-pill">
+        <span class="dot"></span>
+        <span id="liveCount">0 qeyd</span>
+      </div>
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="top-actions">
+      <button id="themeToggle" title="Tema"><i class="ph ph-sun"></i></button>
+      <button class="btn-primary" id="addBtn">
+        <i class="ph ph-plus"></i> Əlavə Et
+      </button>
+    </div>
+  </header>
+
+  <!-- ─────────── SEARCH + VIEW ─────────── -->
+  <div class="control-bar">
+    <div class="search-wrap">
+      <i class="ph ph-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Keçid və ya qeydlərdə axtar...">
+    </div>
+    <div class="view-btns">
+      <button class="view-btn active" id="gridViewBtn" title="Grid"><i class="ph ph-squares-four"></i></button>
+      <button class="view-btn" id="listViewBtn" title="List"><i class="ph ph-list"></i></button>
+    </div>
+  </div>
+
+  <!-- ─────────── CATEGORY TABS ─────────── -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab active" data-cat="all">Hamısı <span class="tab-count" id="cnt-all">0</span></button>
+    <button class="tab" data-cat="github">GitHub <span class="tab-count" id="cnt-github">0</span></button>
+    <button class="tab" data-cat="video">Video <span class="tab-count" id="cnt-video">0</span></button>
+    <button class="tab" data-cat="ai">AI <span class="tab-count" id="cnt-ai">0</span></button>
+    <button class="tab" data-cat="kod">Kod <span class="tab-count" id="cnt-kod">0</span></button>
+    <button class="tab" data-cat="not">Mətn (Qeyd) <span class="tab-count" id="cnt-not">0</span></button>
+    <button class="tab" data-cat="link">Link <span class="tab-count" id="cnt-link">0</span></button>
+  </div>
+
+  <!-- ─────────── MAIN GRID ─────────── -->
+  <main class="main">
+    <div class="watermark" aria-hidden="true">KV</div>
+    <div class="vault-grid" id="vaultGrid"></div>
+  </main>
+
+  <!-- ════════════════════════════════
+       ADD / EDIT MODAL
+  ════════════════════════════════ -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="addModalTitle" class="add-title"><i class="ph ph-lightning"></i> Yeni Qeyd</h3>
+        <button class="close-btn" id="closeAddModal"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <label class="field-label" for="fTitle">Başlıq</label>
+        <input type="text" id="fTitle" placeholder="Başlıq daxil et...">
+
+        <label class="field-label" for="fType">Tip</label>
+        <select id="fType">
+          <option value="note">📝 Not (Mətn)</option>
+          <option value="link">🔗 Link</option>
+          <option value="code">💻 Kod</option>
+        </select>
+
+        <label class="field-label" for="fUrl" id="fUrlLabel">URL</label>
+        <input type="text" id="fUrl" placeholder="https://...">
+
+        <label class="field-label" for="fContent">Məzmun</label>
+        <textarea id="fContent" rows="5" placeholder="Məzmun, kod parçası, qeyd..."></textarea>
+
+        <div class="modal-actions">
+          <button class="btn-ghost" id="cancelAddModal">Ləğv et</button>
+          <button class="btn-accent" id="saveBtn">
+            <i class="ph ph-floppy-disk"></i> Yadda Saxla
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       DELETE PASSWORD MODAL
+  ════════════════════════════════ -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="del-title"><i class="ph ph-shield-warning"></i> Silmə Təsdiqləmə</h3>
+        <button class="close-btn" id="closeDelModal"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="del-icon-wrap"><i class="ph ph-trash"></i></div>
+        <p class="del-desc">
+          Bu qeydi <strong>həmişəlik</strong> silmək istəyirsiniz?<br>
+          Davam etmək üçün şifrəni daxil edin.
+        </p>
+
+        <label class="field-label" for="fPw">Şifrə</label>
+        <div class="pw-wrap">
+          <input type="password" id="fPw" placeholder="Şifrəni daxil edin...">
+          <button class="pw-eye" id="pwEye" type="button" tabindex="-1">
+            <i class="ph ph-eye" id="pwEyeIcon"></i>
+          </button>
+        </div>
+        <p class="pw-err" id="pwErr"><i class="ph ph-warning-circle"></i> Şifrə yanlışdır.</p>
+
+        <div class="modal-actions">
+          <button class="btn-ghost" id="cancelDelModal">Ləğv et</button>
+          <button class="btn-danger" id="confirmDelBtn">
+            <i class="ph ph-trash"></i> Sil
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toasts"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

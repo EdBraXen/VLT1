@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment variables (SECRET! Never commit)
+.env
+
+# SQLite local DB
+*.db
+*.sqlite
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
