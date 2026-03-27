@@ -287,13 +287,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     grid.querySelectorAll('.icon-btn.edit').forEach(btn => {
       btn.addEventListener('click', () => {
-        const note = allNotes.find(n => n.id == btn.dataset.id);
-        if (note) openAddModal(note);
+        openAuthModal(btn.dataset.id, 'edit');
       });
     });
 
     grid.querySelectorAll('.icon-btn.del').forEach(btn => {
-      btn.addEventListener('click', () => openDelModal(+btn.dataset.id));
+      btn.addEventListener('click', () => openAuthModal(btn.dataset.id, 'delete'));
     });
   }
 
@@ -447,14 +446,20 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ──────────────────────────────────────────
-     DELETE MODAL (Password: 2@@7A)
+     AUTH MODAL (Edit & Delete, Password: 2@@7A)
   ──────────────────────────────────────── */
-  const delModal = document.getElementById('deleteModal');
+  const authModal = document.getElementById('deleteModal');
   const fPw = document.getElementById('fPw');
   const pwErr = document.getElementById('pwErr');
   const pwEye = document.getElementById('pwEye');
   const pwEyeIcon = document.getElementById('pwEyeIcon');
   const confirmBtn = document.getElementById('confirmDelBtn');
+  
+  const authTitle = document.getElementById('authTitle');
+  const authIcon = document.getElementById('authIcon');
+  const authDesc = document.getElementById('authDesc');
+  const authBtnIcon = document.getElementById('authBtnIcon');
+  const authBtnText = document.getElementById('authBtnText');
 
   pwEye.addEventListener('click', () => {
     const isText = fPw.type === 'text';
@@ -462,25 +467,43 @@ document.addEventListener('DOMContentLoaded', () => {
     pwEyeIcon.className = `ph ${isText ? 'ph-eye' : 'ph-eye-slash'}`;
   });
 
-  function openDelModal(id) {
-    pendingDel = id;
+  function openAuthModal(id, action) {
+    pendingDel = { id, action };
+    
+    // Update UI based on action
+    if (action === 'delete') {
+      authTitle.innerHTML = '<i class="ph ph-shield-warning"></i> Silmə Təsdiqləmə';
+      authIcon.className = 'ph ph-trash';
+      authDesc.innerHTML = 'Bu qeydi <strong>həmişəlik</strong> silmək istəyirsiniz?<br>Davam etmək üçün şifrəni daxil edin.';
+      authBtnIcon.className = 'ph ph-trash';
+      authBtnText.innerText = 'Sil';
+      confirmBtn.className = 'btn-danger';
+    } else if (action === 'edit') {
+      authTitle.innerHTML = '<i class="ph ph-shield-check"></i> Redaktə Təsdiqləmə';
+      authIcon.className = 'ph ph-pencil-simple';
+      authDesc.innerHTML = 'Bu qeydi redaktə etmək istəyinizə əminsiniz?<br>Davam etmək üçün şifrəni daxil edin.';
+      authBtnIcon.className = 'ph ph-check';
+      authBtnText.innerText = 'Davam Et';
+      confirmBtn.className = 'btn-open';
+    }
+
     fPw.value = ''; fPw.type = 'password';
     pwEyeIcon.className = 'ph ph-eye';
     pwErr.classList.remove('show');
-    delModal.classList.add('active');
+    authModal.classList.add('active');
     setTimeout(() => fPw.focus(), 80);
   }
 
-  function closeDelModal() {
-    delModal.classList.remove('active');
+  function closeAuthModal() {
+    authModal.classList.remove('active');
     pendingDel = null;
     fPw.value = '';
     pwErr.classList.remove('show');
   }
 
-  document.getElementById('closeDelModal').addEventListener('click', closeDelModal);
-  document.getElementById('cancelDelModal').addEventListener('click', closeDelModal);
-  delModal.addEventListener('click', e => { if (e.target === delModal) closeDelModal(); });
+  document.getElementById('closeDelModal').addEventListener('click', closeAuthModal);
+  document.getElementById('cancelDelModal').addEventListener('click', closeAuthModal);
+  authModal.addEventListener('click', e => { if (e.target === authModal) closeAuthModal(); });
 
   fPw.addEventListener('keydown', e => { if (e.key === 'Enter') confirmBtn.click(); });
 
@@ -495,17 +518,27 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const { id, action } = pendingDel;
+    
+    if (action === 'edit') {
+      closeAuthModal();
+      const note = allNotes.find(n => n.id === String(id) || n.id === Number(id));
+      if (note) openAddModal(note);
+      return;
+    }
+
+    // Handle Delete
     confirmBtn.disabled = true;
     confirmBtn.innerHTML = '<i class="ph ph-spinner"></i> Silinir...';
 
     try {
-      const res = await fetch(`/api/vaults/${pendingDel}`, { method: 'DELETE' });
+      const res = await fetch(`/api/vaults/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        allNotes = allNotes.filter(n => n.id !== pendingDel);
-        delete starred[pendingDel];
+        allNotes = allNotes.filter(n => String(n.id) !== String(id));
+        delete starred[id];
         localStorage.setItem('kv-starred', JSON.stringify(starred));
         refresh();
-        closeDelModal();
+        closeAuthModal();
         toast('Qeyd silindi.', 'success');
       } else {
         toast('Silinmə xətası.', 'error');
@@ -514,7 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
       toast('Serverə qoşulmaq alınmadı.', 'error');
     } finally {
       confirmBtn.disabled = false;
-      confirmBtn.innerHTML = '<i class="ph ph-trash"></i> Sil';
+      confirmBtn.innerHTML = '<i class="ph ph-trash" id="authBtnIcon"></i> <span id="authBtnText">Sil</span>';
     }
   });
 
