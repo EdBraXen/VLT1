@@ -183,17 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="card-video">
             <iframe src="https://www.youtube.com/embed/${ytVid}?controls=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           </div>`;
-      } else if (cat !== 'not' && cat !== 'kod') {
-        const iconMap = {
-          github: '<i class="ph ph-github-logo"></i>',
-          video: '<i class="ph ph-youtube-logo"></i>',
-          ai: '<i class="ph ph-robot"></i>',
-          link: '<i class="ph ph-link"></i>'
-        };
-        mediaHtml = `
-          <div class="card-thumb platform-logo logo-${cat}">
-            ${iconMap[cat] || '<i class="ph ph-link"></i>'}
-          </div>`;
       }
 
       /* body text (left border) */
