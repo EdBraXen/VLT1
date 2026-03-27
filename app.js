@@ -178,24 +178,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
       /* thumbnail/video */
       let mediaHtml = '';
-      if (!isListView) {
-        if (ytVid) {
-          mediaHtml = `
-            <div class="card-video">
-              <iframe src="https://www.youtube.com/embed/${ytVid}?controls=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>`;
-        } else if (cat !== 'not' && cat !== 'kod') {
-          const iconMap = {
-            github: '<i class="ph ph-github-logo"></i>',
-            video: '<i class="ph ph-youtube-logo"></i>',
-            ai: '<i class="ph ph-robot"></i>',
-            link: '<i class="ph ph-link"></i>'
-          };
-          mediaHtml = `
-            <div class="card-thumb platform-logo logo-${cat}">
-              ${iconMap[cat] || '<i class="ph ph-link"></i>'}
-            </div>`;
-        }
+      if (ytVid) {
+        mediaHtml = `
+          <div class="card-video">
+            <iframe src="https://www.youtube.com/embed/${ytVid}?controls=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>`;
+      } else if (cat !== 'not' && cat !== 'kod') {
+        const iconMap = {
+          github: '<i class="ph ph-github-logo"></i>',
+          video: '<i class="ph ph-youtube-logo"></i>',
+          ai: '<i class="ph ph-robot"></i>',
+          link: '<i class="ph ph-link"></i>'
+        };
+        mediaHtml = `
+          <div class="card-thumb platform-logo logo-${cat}">
+            ${iconMap[cat] || '<i class="ph ph-link"></i>'}
+          </div>`;
       }
 
       /* body text (left border) */
@@ -219,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('article');
       card.className = `vault-card size-${note.card_size || 'normal'}`;
       card.dataset.id = note.id;
+      card.dataset.cat = cat;
       card.innerHTML = `
         <div class="card-body">
           <div class="card-top">
@@ -245,6 +244,12 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>
           </div>
         </div>`;
+
+      card.addEventListener('click', (e) => {
+        if (!isListView) return;
+        if (e.target.closest('button, a, iframe')) return;
+        card.classList.toggle('expanded');
+      });
 
       grid.appendChild(card);
     });
