@@ -179,19 +179,34 @@ document.addEventListener('DOMContentLoaded', () => {
       /* thumbnail */
       let thumbHtml = '';
       if (!isListView) {
-        let thumbSrc = ytVid
-          ? `https://img.youtube.com/vi/${ytVid}/hqdefault.jpg`
-          : null;
-
-        if (thumbSrc) {
+        if (ytVid) {
+          // It's a youtube link, show real video thumbnail
+          let thumbSrc = `https://img.youtube.com/vi/${ytVid}/hqdefault.jpg`;
           thumbHtml = `
             <div class="card-thumb">
               <img src="${thumbSrc}" alt="thumbnail" loading="lazy"
-                   onerror="this.parentElement.innerHTML='<div class=\\'no-thumb\\'>🎬</div>'">
+                   onerror="this.parentElement.innerHTML='<div class=\\'platform-logo logo-video\\'><i class=\\'ph ph-youtube-logo\\'></i></div>'">
               <div class="play-overlay">
                 <button class="play-btn" data-url="${esc(note.url)}" title="İzlə">
                   <i class="ph ph-play"></i>
                 </button>
+              </div>
+            </div>`;
+        } else {
+          // Show a beautiful fallback logo based on the category
+          const iconMap = {
+            github: '<i class="ph ph-github-logo"></i>',
+            video:  '<i class="ph ph-youtube-logo"></i>',
+            ai:     '<i class="ph ph-robot"></i>',
+            kod:    '<i class="ph ph-code"></i>',
+            not:    '<i class="ph ph-file-text"></i>',
+            link:   '<i class="ph ph-link"></i>'
+          };
+          const logoIcon = iconMap[cat] || iconMap.not;
+          thumbHtml = `
+            <div class="card-thumb">
+              <div class="platform-logo logo-${cat}">
+                ${logoIcon}
               </div>
             </div>`;
         }
