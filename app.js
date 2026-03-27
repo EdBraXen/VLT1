@@ -112,12 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function badge(cat) {
     const map = {
-      github: ['<i class="ph ph-github-logo"></i> GITHUB', 'badge-github'],
-      video:  ['<i class="ph ph-play-circle"></i> VİDEO',  'badge-video'],
-      ai:     ['<i class="ph ph-robot"></i> AI',           'badge-ai'],
-      kod:    ['<i class="ph ph-code"></i> KOD',           'badge-kod'],
-      not:    ['<i class="ph ph-note-pencil"></i> QEYİD',  'badge-not'],
-      link:   ['<i class="ph ph-link"></i> LİNK',          'badge-link'],
+      github: ['<i class="ph ph-hash"></i> GITHUB', 'badge-github'],
+      video:  ['<i class="ph ph-hash"></i> VIDEO',  'badge-video'],
+      ai:     ['<i class="ph ph-hash"></i> AI',     'badge-ai'],
+      kod:    ['<i class="ph ph-hash"></i> KOD',    'badge-kod'],
+      not:    ['<i class="ph ph-hash"></i> QEYD',   'badge-not'],
+      link:   ['<i class="ph ph-hash"></i> LİNK',   'badge-link'],
     };
     const [label, cls] = map[cat] || map.not;
     return `<span class="badge ${cls}">${label}</span>`;
@@ -176,24 +176,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const ytVid    = ytId(note.url);
       const isStarred= !!starred[note.id];
 
-      /* thumbnail */
-      let thumbHtml = '';
+      /* thumbnail/video */
+      let mediaHtml = '';
       if (!isListView) {
         if (ytVid) {
-          // It's a youtube link, show real video thumbnail
-          let thumbSrc = `https://img.youtube.com/vi/${ytVid}/hqdefault.jpg`;
-          thumbHtml = `
-            <div class="card-thumb">
-              <img src="${thumbSrc}" alt="thumbnail" loading="lazy"
-                   onerror="this.parentElement.innerHTML='<div class=\\'platform-logo logo-video\\'><i class=\\'ph ph-youtube-logo\\'></i></div>'">
-              <div class="play-overlay">
-                <button class="play-btn" data-url="${esc(note.url)}" title="İzlə">
-                  <i class="ph ph-play"></i>
-                </button>
-              </div>
+          mediaHtml = `
+            <div class="card-video">
+              <iframe src="https://www.youtube.com/embed/${ytVid}?controls=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>`;
         } else {
-          // Show a beautiful fallback logo based on the category
           const iconMap = {
             github: '<i class="ph ph-github-logo"></i>',
             video:  '<i class="ph ph-youtube-logo"></i>',
@@ -202,70 +193,58 @@ document.addEventListener('DOMContentLoaded', () => {
             not:    '<i class="ph ph-file-text"></i>',
             link:   '<i class="ph ph-link"></i>'
           };
-          const logoIcon = iconMap[cat] || iconMap.not;
-          thumbHtml = `
-            <div class="card-thumb">
-              <div class="platform-logo logo-${cat}">
-                ${logoIcon}
-              </div>
+          mediaHtml = `
+            <div class="card-thumb platform-logo logo-${cat}">
+              ${iconMap[cat] || iconMap.not}
             </div>`;
         }
       }
 
-      /* body content */
+      /* body text (left border) */
       let bodyContent = '';
       if (note.item_type === 'code') {
-        bodyContent = `<pre class="card-code">${esc(note.content)}</pre>`;
+        bodyContent = `<div class="card-desc"><pre class="card-code">${esc(note.content)}</pre></div>`;
       } else if (note.content) {
-        bodyContent = `<p class="card-text">${esc(note.content)}</p>`;
+        bodyContent = `<div class="card-desc">${esc(note.content)}</div>`;
       }
 
-      /* source */
       let sourceHtml = '';
       if (note.url) {
-        sourceHtml = `<p class="card-source">${esc(domain(note.url))}</p>`;
+        sourceHtml = `<p class="card-source"><span class="dot"></span> ${esc(domain(note.url))}</p>`;
       }
 
-      /* open button */
       const openBtn = note.url
-        ? `<a class="btn-open" href="${esc(note.url)}" target="_blank" rel="noopener">
-             Aç <i class="ph ph-arrow-square-out"></i>
-           </a>`
+        ? `<a class="btn-open" href="${esc(note.url)}" target="_blank" rel="noopener">Aç <i class="ph ph-arrow-square-out"></i></a>`
         : '';
-
-      /* copy value */
       const copyVal = note.url || note.content || note.title || '';
 
       const card = document.createElement('article');
       card.className = 'vault-card';
       card.dataset.id = note.id;
       card.innerHTML = `
-        ${thumbHtml}
         <div class="card-body">
           <div class="card-top">
             ${badge(cat)}
-            <button class="star-btn ${isStarred ? 'active' : ''}"
-                    data-id="${note.id}" title="Əlfəcin">
-              ${isStarred ? '★' : '☆'}
+            <button class="star-btn ${isStarred ? 'active' : ''}" data-id="${note.id}" title="Əlfəcin">
+              <i class="ph ${isStarred ? 'ph-star-fill' : 'ph-star'}"></i>
             </button>
           </div>
           <h3 class="card-title">${esc(note.title)}</h3>
           ${sourceHtml}
+          ${mediaHtml}
           ${bodyContent}
           <div class="card-footer">
             ${openBtn}
             <button class="btn-copy" data-copy="${esc(copyVal)}">
-              <i class="ph ph-copy"></i> Kopyala
+              Kopyala <i class="ph ph-copy"></i>
             </button>
             <div class="footer-spacer"></div>
-            <div class="card-icon-btns">
-              <button class="icon-btn edit" data-id="${note.id}" title="Redaktə">
-                <i class="ph ph-pencil-simple"></i>
-              </button>
-              <button class="icon-btn del" data-id="${note.id}" title="Sil">
-                <i class="ph ph-trash"></i>
-              </button>
-            </div>
+            <button class="icon-btn edit" data-id="${note.id}" title="Redaktə">
+              <i class="ph ph-pencil-simple"></i>
+            </button>
+            <button class="icon-btn del" data-id="${note.id}" title="Sil">
+              <i class="ph ph-trash"></i>
+            </button>
           </div>
         </div>`;
 
@@ -280,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!starred[id]) delete starred[id];
         localStorage.setItem('kv-starred', JSON.stringify(starred));
         btn.classList.toggle('active');
-        btn.textContent = starred[id] ? '★' : '☆';
+        btn.innerHTML = starred[id] ? '<i class="ph ph-star-fill"></i>' : '<i class="ph ph-star"></i>';
         toast(starred[id] ? 'Əlfəcinlərə əlavə edildi' : 'Əlfəcindən silindi', 'info');
       });
     });
